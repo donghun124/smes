@@ -28,7 +28,6 @@ const Footer: React.FC = () => {
               <li><a href="#/" className="hover:text-white transition-colors">제품소개</a></li>
               <li><a href="#/about" className="hover:text-white transition-colors">주요기능</a></li>
               <li><a href="#/usage" className="hover:text-white transition-colors">사용방법</a></li>
-              <li><a href="#/contact" className="hover:text-white transition-colors">문의하기</a></li>
             </ul>
           </div>
           <div>
@@ -64,10 +63,10 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-white font-bold mb-6">Contact</h3>
             <ul className="space-y-4 text-sm">
-              <li>T. 02-1234-5678</li>
+              <li>T. 02-839-5891</li>
               <li>F. 070-4705-8591</li>
-              <li>support@engsoft.co.kr</li>
-              <li>서울시 강남구 테헤란로 123</li>
+              <li>ksg@engsoft.kr</li>
+              <li>서울시 강서구 양천로 583 우림블루나인비즈니스센터 B동 2310호</li>
             </ul>
           </div>
         </div>

@@ -10,8 +10,7 @@ const Download: React.FC = () => {
           <div className="flex justify-center mb-8">
             <div
               onClick={() => {
-                // 다운로드 링크는 실제 링크로 교체 필요
-                window.open("#", "_blank");
+                window.open("https://naver.me/FfsNYCng", "_blank");
               }}
               className="bg-white border-2 border-blue-600 hover:bg-blue-50 rounded-xl p-8 transition-all shadow-md hover:shadow-xl group cursor-pointer max-w-sm w-full"
             >
@@ -23,7 +22,7 @@ const Download: React.FC = () => {
                 </div>
                 <h4 className="text-xl font-bold text-gray-900 mb-2">Windows</h4>
                 <p className="text-sm text-gray-600 mb-1">버전 v2026.01</p>
-                <p className="text-xs text-blue-600 font-semibold">SMES_Launcher.exe</p>
+                <p className="text-xs text-blue-600 font-semibold">SMES_Launcher.zip</p>
               </div>
             </div>
           </div>

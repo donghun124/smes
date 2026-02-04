@@ -9,7 +9,6 @@ const Navbar: React.FC = () => {
     { name: '제품소개', path: '/' },
     { name: '주요기능', path: '/about' },
     { name: '사용방법', path: '/usage' },
-    { name: '문의하기', path: '/contact' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -20,9 +19,11 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
-                SMES
-              </div>
+              <img 
+                src="/icons/Logo.ico" 
+                alt="SMES Logo" 
+                className="w-8 h-8"
+              />
               <span className="text-2xl font-bold text-blue-800 tracking-tight">SMES</span>
               <span className="hidden sm:block text-xs text-gray-400 border-l border-gray-300 pl-2">Smart Manufacturing Execution System</span>
             </Link>

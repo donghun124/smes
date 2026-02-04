@@ -34,15 +34,11 @@ const Home: React.FC = () => {
             </div>
             <div className="relative">
               <div className="bg-white p-2 rounded-xl shadow-2xl overflow-hidden transform hover:scale-105 transition-transform duration-500">
-                <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg h-64 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
-                      SMES
-                    </div>
-                    <p className="text-blue-900 font-semibold">스마트 제조 실행 시스템</p>
-                  </div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
+                <img 
+                  src="/Image/Main.png" 
+                  alt="SMES Smart Manufacturing Execution System" 
+                  className="w-full h-auto rounded-lg"
+                />
               </div>
             </div>
           </div>
