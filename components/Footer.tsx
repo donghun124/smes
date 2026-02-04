@@ -7,10 +7,13 @@ const Footer: React.FC = () => {
         <div className="grid md:grid-cols-5 gap-12 mb-12">
           <div className="col-span-2">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
-                SMES
-              </div>
-              <h2 className="text-white text-2xl font-bold">SMES</h2>
+              <img 
+                src="/icons/Logo.ico" 
+                alt="SMES Logo" 
+                className="w-8 h-8"
+              />
+              <span className="text-2xl font-bold text-white tracking-tight">SMES</span>
+              <span className="hidden sm:block text-xs text-gray-400 border-l border-gray-700 pl-2">Smart Manufacturing Execution System</span>
             </div>
             <p className="text-sm leading-relaxed mb-6 max-w-md">
               주식회사 이엔지소프트는 혁신적인 기술을 통해 더 나은 세상을 만듭니다. 
