@@ -4,9 +4,10 @@ import { ManualSection, FormField, ButtonConfig, TableConfig, UIPreview } from '
 
 interface ContentViewerProps {
   section: ManualSection;
+  onSelect?: (section: ManualSection) => void;
 }
 
-export const ContentViewer: React.FC<ContentViewerProps> = ({ section }) => {
+export const ContentViewer: React.FC<ContentViewerProps> = ({ section, onSelect }) => {
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
   if (!section.content && (!section.children || section.children.length === 0)) {
     return (
@@ -64,15 +65,12 @@ export const ContentViewer: React.FC<ContentViewerProps> = ({ section }) => {
             case 'image':
               return (
                 <figure key={idx} className="my-8">
-                  <div 
-                    className="flex justify-center cursor-pointer"
-                    onClick={() => setExpandedImage(block.value as string)}
-                  >
+                  <div className="flex justify-center">
                     <div className="relative flex justify-center">
                       <img 
                         src={block.value as string} 
                         alt={block.caption || '메뉴얼 이미지'}
-                        className="h-auto object-contain transition-transform duration-300 hover:scale-105"
+                        className="h-auto object-contain"
                         loading="lazy"
                         style={{ maxWidth: '100%', maxHeight: '600px', width: 'auto' }}
                         onError={(e) => {
@@ -84,9 +82,6 @@ export const ContentViewer: React.FC<ContentViewerProps> = ({ section }) => {
                           }
                         }}
                       />
-                      <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity">
-                        클릭하여 확대
-                      </div>
                     </div>
                   </div>
                   {block.caption && (
@@ -114,8 +109,14 @@ export const ContentViewer: React.FC<ContentViewerProps> = ({ section }) => {
             <h3 className="text-xl font-bold text-gray-900 mb-6 uppercase tracking-wide">하위 목차</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {section.children?.map(child => (
-                <div key={child.id} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                  <span className="text-blue-600 font-semibold">{child.title}</span>
+                <div 
+                  key={child.id} 
+                  onClick={() => onSelect && onSelect(child)}
+                  className={`p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer ${
+                    onSelect ? 'hover:border-blue-400' : ''
+                  }`}
+                >
+                  <span className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">{child.title}</span>
                 </div>
               ))}
             </div>

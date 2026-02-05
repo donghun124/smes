@@ -19,7 +19,7 @@ const Usage: React.FC = () => {
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar Desktop */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-gray-200 transition-transform duration-300 transform lg:translate-x-0 ${
+        className={`fixed top-16 left-0 bottom-0 z-40 w-72 bg-white border-r border-gray-200 transition-transform duration-300 transform ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -79,13 +79,14 @@ const Usage: React.FC = () => {
 
         {/* Content View */}
         <div className="bg-white min-h-[calc(100vh-64px)]">
-           <ContentViewer section={activeSection} />
+           <ContentViewer 
+             section={activeSection} 
+             onSelect={(s) => {
+               setActiveSection(s);
+               window.scrollTo(0, 0);
+             }}
+           />
         </div>
-
-        {/* Simple Footer */}
-        <footer className="py-8 px-6 border-t border-gray-200 bg-gray-50 text-center text-sm text-gray-400">
-          <p>© 2026 (주) 이엔지소프트. All rights reserved.</p>
-        </footer>
       </main>
 
       {/* Mobile Sidebar Overlay */}

@@ -29,7 +29,7 @@ const SidebarItem: React.FC<{
         onClick={() => onSelect(item)}
         className={`flex items-center py-2 px-3 rounded-lg cursor-pointer transition-colors group ${
           isActive 
-            ? 'bg-blue-50 text-blue-700 font-semibold' 
+            ? 'bg-blue-600 text-white font-semibold shadow-md' 
             : 'hover:bg-gray-100 text-gray-700'
         }`}
         style={{ paddingLeft: `${depth * 12 + 12}px` }}
@@ -37,7 +37,11 @@ const SidebarItem: React.FC<{
         {hasChildren ? (
           <button 
             onClick={toggleOpen}
-            className="mr-2 p-1 hover:bg-gray-200 rounded text-gray-400 group-hover:text-gray-600 transition-transform duration-200"
+            className={`mr-2 p-1 hover:bg-opacity-20 rounded transition-transform duration-200 ${
+              isActive 
+                ? 'text-white hover:bg-white' 
+                : 'text-gray-400 group-hover:text-gray-600 hover:bg-gray-200'
+            }`}
             style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,10 +74,6 @@ const SidebarItem: React.FC<{
 export const Sidebar: React.FC<SidebarProps> = ({ data, activeId, onSelect }) => {
   return (
     <nav className="h-full overflow-y-auto py-6 px-4">
-      <div className="mb-6 px-3">
-        <h1 className="text-xl font-bold text-gray-900">SMES Manual</h1>
-        <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider font-semibold">ENGSOFT SMES 따라하기</p>
-      </div>
       <div className="space-y-1">
         {data.map((item) => (
           <SidebarItem
