@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sMES 통합 대시보드 | Steel Manufacturing Execution System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+              400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+              800: '#1e40af', 900: '#1e3a8a',
+            },
+          },
+          fontFamily: {
+            sans: ['Noto Sans KR', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft': '0 2px 8px 0 rgba(0,0,0,0.04), 0 1px 2px 0 rgba(0,0,0,0.06)',
+            'medium': '0 4px 12px 0 rgba(0,0,0,0.08), 0 2px 4px 0 rgba(0,0,0,0.06)',
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .card { background:white; border-radius:0.75rem; border:1px solid #e5e7eb; box-shadow:0 2px 8px 0 rgba(0,0,0,0.04), 0 1px 2px 0 rgba(0,0,0,0.06); }
+    .stat-card { transition:all 0.3s; }
+    .stat-card:hover { transform:translateY(-4px); box-shadow:0 10px 25px -5px rgba(0,0,0,0.1); }
+    .progress-bar { transition:width 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .tab-btn { display:flex; align-items:center; gap:0.5rem; padding:0.75rem 1.5rem; font-size:0.875rem; font-weight:600; transition:all 0.2s; position:relative; color:#6b7280; white-space:nowrap; }
+    .tab-btn:hover { color:#374151; }
+    .tab-btn.active { color:#2563eb; }
+    .tab-btn.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2.5px; background:#2563eb; border-radius:2px; }
+    .status-dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
+    @keyframes slide-up { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    .anim { animation:slide-up 0.5s ease-out forwards; }
+    .anim-d1 { animation-delay:0.05s; opacity:0; }
+    .anim-d2 { animation-delay:0.1s; opacity:0; }
+    .anim-d3 { animation-delay:0.15s; opacity:0; }
+    .anim-d4 { animation-delay:0.2s; opacity:0; }
+    .gauge-ring { transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1); }
+    .cut-bar { height:28px; display:flex; border-radius:4px; overflow:hidden; }
+    .cut-bar .piece { transition:width 0.8s ease; }
+    .pipeline-card { transition:all 0.3s; }
+    .pipeline-card:hover { transform:translateY(-2px); box-shadow:0 8px 20px -4px rgba(0,0,0,0.1); }
+    ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:#f1f5f9; } ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px; }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <!-- sMES Logo -->
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl font-extrabold tracking-tight text-gray-900"><span class="text-primary-600">s</span>MES</span>
+            <div class="hidden sm:block border-l border-gray-200 pl-3 ml-1">
+              <p class="text-xs text-gray-500 font-medium leading-tight">Steel Manufacturing</p>
+              <p class="text-xs text-gray-500 font-medium leading-tight">Execution System</p>
+            </div>
+          </div>
+          <div class="hidden md:flex items-center gap-2 ml-4 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200">
+            <i data-lucide="building-2" class="w-4 h-4 text-gray-400"></i>
+            <span class="text-sm font-semibold text-gray-800">이엔지중공업</span>
+            <span class="text-gray-300">|</span>
+            <select id="projectSelect" onchange="switchProject(this.value)"
+              class="text-sm bg-transparent border-none text-gray-700 font-medium focus:outline-none focus:ring-0 cursor-pointer pr-6 appearance-none"
+              style="background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27%236b7280%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 0 center;background-size:1rem">
+              <option value="all" selected>전체 공사</option>
+              <option value="sejong">세종 신축공사</option>
+              <option value="busan">부산 물류센터</option>
+              <option value="incheon">인천 공장증축</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+            <span class="text-sm font-bold text-blue-700">대시보드 예시</span>
+            <span class="text-xs text-blue-500 border-l border-blue-200 pl-2">커스터마이징 가능</span>
+          </div>
+          <div class="border-l border-gray-200 h-8 mx-1"></div>
+          <button class="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+          <div class="w-9 h-9 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold">DH</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Page Header -->
+    <div class="card p-6 anim">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-4">
+          <div class="p-2.5 bg-primary-50 rounded-xl">
+            <i data-lucide="layout-dashboard" class="w-6 h-6 text-primary-500"></i>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">통합 대시보드</h1>
+            <p class="text-sm text-gray-500 mt-0.5">전체 프로세스를 한눈에 확인하세요</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-gray-400">
+          <span class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg border border-gray-200 font-medium">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i> 2026-02-27 (목)
+          </span>
+          <span>14:32 갱신</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 전체 공사 뷰 ==================== -->
+    <div id="view-all" class="space-y-6">
+
+      <!-- 전체 공사 요약 카드 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="card stat-card p-5 anim">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-primary-50 rounded-lg"><i data-lucide="folder-kanban" class="w-5 h-5 text-primary-600"></i></div>
+            <span class="font-semibold text-gray-900">전체 공사</span>
+          </div>
+          <p class="text-3xl font-extrabold text-gray-900">3 <span class="text-sm font-normal text-gray-400">건</span></p>
+          <div class="flex items-center gap-3 mt-2 text-xs">
+            <span class="flex items-center gap-1 text-emerald-600"><span class="status-dot bg-emerald-500"></span>진행 2</span>
+            <span class="flex items-center gap-1 text-amber-600"><span class="status-dot bg-amber-500"></span>준비 1</span>
+          </div>
+        </div>
+        <div class="card stat-card p-5 anim anim-d1">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-primary-50 rounded-lg"><i data-lucide="weight" class="w-5 h-5 text-primary-600"></i></div>
+            <span class="font-semibold text-gray-900">총 중량</span>
+          </div>
+          <p class="text-3xl font-extrabold text-gray-900">5,427.0 <span class="text-sm font-normal text-gray-400">ton</span></p>
+          <p class="text-xs text-gray-400 mt-2">부재 2,876EA · 단품 7,208EA</p>
+        </div>
+        <div class="card stat-card p-5 anim anim-d2">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-emerald-50 rounded-lg"><i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i></div>
+            <span class="font-semibold text-gray-900">전체 진행률</span>
+          </div>
+          <p class="text-3xl font-extrabold text-emerald-600">48.2<span class="text-sm font-normal">%</span></p>
+          <p class="text-xs text-gray-400 mt-2">생산완료 2,616.6 ton</p>
+        </div>
+        <div class="card stat-card p-5 anim anim-d3">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-emerald-50 rounded-lg"><i data-lucide="target" class="w-5 h-5 text-emerald-600"></i></div>
+            <span class="font-semibold text-gray-900">평균 로스율</span>
+          </div>
+          <p class="text-3xl font-extrabold text-emerald-600">7.8<span class="text-sm font-normal">%</span></p>
+          <p class="text-xs text-gray-400 mt-2">목표 8% 이하 <span class="text-emerald-500 font-semibold">달성</span></p>
+        </div>
+      </div>
+
+      <!-- 공사별 비교 테이블 -->
+      <div class="card p-6 anim">
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-primary-50 rounded-lg"><i data-lucide="bar-chart-3" class="w-5 h-5 text-primary-600"></i></div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900">공사별 현황 비교</h2>
+              <p class="text-xs text-gray-500 mt-0.5">전체 공사의 공정 진행률 및 핵심 지표 한눈에 비교</p>
+            </div>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b-2 border-gray-200">
+                <th class="text-left py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">공사명</th>
+                <th class="text-right py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">부재수</th>
+                <th class="text-right py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">중량(ton)</th>
+                <th class="text-center py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">1차가공</th>
+                <th class="text-center py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">생산</th>
+                <th class="text-center py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">검사</th>
+                <th class="text-center py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">출하</th>
+                <th class="text-center py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">로스율</th>
+                <th class="text-left py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">납기</th>
+                <th class="text-left py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">상태</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="hover:bg-primary-50/30 transition-colors cursor-pointer" onclick="document.getElementById('projectSelect').value='sejong';switchProject('sejong')">
+                <td class="py-4 px-4 font-semibold text-gray-900">세종 신축공사</td>
+                <td class="py-4 px-4 text-right font-semibold">1,247</td>
+                <td class="py-4 px-4 text-right font-semibold">2,456.8</td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:89%"></div></div><span class="text-[11px] font-semibold text-primary-600 mt-0.5">89%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:72%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">72%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:62%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">62%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:44%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">44%</span></div></td>
+                <td class="py-4 px-4 text-center"><span class="text-sm font-bold text-emerald-600">7.5%</span></td>
+                <td class="py-4 px-4 text-gray-600">2026-06-30</td>
+                <td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700"><span class="status-dot bg-emerald-500"></span>진행중</span></td>
+              </tr>
+              <tr class="hover:bg-primary-50/30 transition-colors cursor-pointer" onclick="document.getElementById('projectSelect').value='busan';switchProject('busan')">
+                <td class="py-4 px-4 font-semibold text-gray-900">부산 물류센터</td>
+                <td class="py-4 px-4 text-right font-semibold">856</td>
+                <td class="py-4 px-4 text-right font-semibold">1,624.2</td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:65%"></div></div><span class="text-[11px] font-semibold text-primary-600 mt-0.5">65%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:48%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">48%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:38%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">38%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:22%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">22%</span></div></td>
+                <td class="py-4 px-4 text-center"><span class="text-sm font-bold text-emerald-600">6.9%</span></td>
+                <td class="py-4 px-4 text-gray-600">2026-08-15</td>
+                <td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700"><span class="status-dot bg-emerald-500"></span>진행중</span></td>
+              </tr>
+              <tr class="hover:bg-primary-50/30 transition-colors cursor-pointer" onclick="document.getElementById('projectSelect').value='incheon';switchProject('incheon')">
+                <td class="py-4 px-4 font-semibold text-gray-900">인천 공장증축</td>
+                <td class="py-4 px-4 text-right font-semibold">773</td>
+                <td class="py-4 px-4 text-right font-semibold">1,346.0</td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:12%"></div></div><span class="text-[11px] font-semibold text-primary-600 mt-0.5">12%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:5%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">5%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:2%"></div></div><span class="text-[11px] font-semibold text-primary-500 mt-0.5">2%</span></div></td>
+                <td class="py-4 px-4 text-center"><div class="flex flex-col items-center"><div class="w-14 h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:0%"></div></div><span class="text-[11px] font-semibold text-gray-400 mt-0.5">0%</span></div></td>
+                <td class="py-4 px-4 text-center"><span class="text-sm font-bold text-amber-600">9.2%</span></td>
+                <td class="py-4 px-4 text-gray-600">2026-12-20</td>
+                <td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700"><span class="status-dot bg-amber-500"></span>준비중</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-gray-400 mt-3 ml-1">* 공사명 클릭 시 해당 공사 상세 대시보드로 이동합니다</p>
+      </div>
+
+      <!-- 전체 공사 차트 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card p-6 anim">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2 bg-primary-50 rounded-lg"><i data-lucide="bar-chart-3" class="w-5 h-5 text-primary-600"></i></div>
+            <div>
+              <h3 class="text-base font-semibold text-gray-900">공사별 중량 비교</h3>
+              <p class="text-xs text-gray-500">공사별 계획 중량 대비 생산 완료 중량</p>
+            </div>
+          </div>
+          <div class="h-72"><canvas id="chartAllProjects"></canvas></div>
+        </div>
+        <div class="card p-6 anim">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2 bg-emerald-50 rounded-lg"><i data-lucide="target" class="w-5 h-5 text-emerald-600"></i></div>
+            <div>
+              <h3 class="text-base font-semibold text-gray-900">공사별 로스율 추이</h3>
+              <p class="text-xs text-gray-500">월별 컷팅플랜 로스율 비교 (목표선 8%)</p>
+            </div>
+          </div>
+          <div class="h-72"><canvas id="chartAllLoss"></canvas></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== 개별 공사 뷰 ==================== -->
+    <div id="view-project" class="space-y-6 hidden">
+
+    <!-- Hero Metrics Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-10 gap-5">
+
+      <!-- 프로젝트 총괄 -->
+      <div class="lg:col-span-4 card stat-card p-6 anim">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="p-2 bg-primary-50 rounded-lg">
+            <i data-lucide="building-2" class="w-5 h-5 text-primary-500"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">프로젝트 총괄</h3>
+            <p class="text-xs text-gray-500">세종 신축공사 · 전체 현황</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-100">
+            <p class="text-xs text-gray-500 mb-1">총 부재수</p>
+            <p class="text-xl font-bold text-gray-900">1,247 <span class="text-xs font-normal text-gray-400">부재</span></p>
+            <p class="text-xs text-gray-400 mt-0.5">단품 3,248 EA</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-100">
+            <p class="text-xs text-gray-500 mb-1">총 중량</p>
+            <p class="text-xl font-bold text-gray-900">2,456.8 <span class="text-xs font-normal text-gray-400">ton</span></p>
+            <p class="text-xs text-gray-400 mt-0.5">설계 기준</p>
+          </div>
+          <div class="bg-emerald-50 rounded-xl p-3.5 border border-emerald-100">
+            <p class="text-xs text-emerald-600 mb-1">생산 완료</p>
+            <p class="text-xl font-bold text-emerald-700">1,628.4 <span class="text-xs font-normal">ton</span></p>
+            <p class="text-xs text-emerald-500 mt-0.5">66.3% 완료</p>
+          </div>
+          <div class="bg-primary-50 rounded-xl p-3.5 border border-primary-200">
+            <p class="text-xs text-primary-600 mb-1">출하 완료</p>
+            <p class="text-xl font-bold text-primary-700">1,073.6 <span class="text-xs font-normal">ton</span></p>
+            <p class="text-xs text-primary-500 mt-0.5">5차 출하 완료</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 컷팅플랜 로스율 게이지 -->
+      <div class="lg:col-span-2 card stat-card p-6 anim anim-d1">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="p-2 bg-emerald-100 rounded-lg">
+            <i data-lucide="target" class="w-5 h-5 text-emerald-600"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">컷팅플랜 로스율</h3>
+            <p class="text-xs text-gray-500">목표 8% 이하</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="relative w-36 h-36">
+            <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#f3f4f6" stroke-width="10" />
+              <circle cx="60" cy="60" r="52" fill="none" stroke="url(#gaugeGrad)" stroke-width="10"
+                stroke-dasharray="326.7" stroke-dashoffset="302.2" stroke-linecap="round" class="gauge-ring" />
+              <defs><linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#10b981" /><stop offset="100%" stop-color="#34d399" />
+              </linearGradient></defs>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-3xl font-extrabold text-emerald-600">7.5%</span>
+              <span class="text-[10px] text-gray-400 mt-0.5">로스율</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 mt-2 text-[11px]">
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-gray-500">사용 92.5%</span></span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-gray-500">잔재 5.2%</span></span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-400"></span><span class="text-gray-500">손실 2.3%</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 금일 실적 -->
+      <div class="lg:col-span-2 card stat-card p-6 anim anim-d2">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-primary-100 rounded-lg">
+            <i data-lucide="zap" class="w-5 h-5 text-primary-600"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">금일 실적</h3>
+            <p class="text-xs text-gray-500">2026-02-27</p>
+          </div>
+        </div>
+        <div class="space-y-2.5">
+          <div class="flex justify-between items-center text-sm"><span class="text-gray-500">1차가공</span><span class="font-bold text-primary-700">48 EA</span></div>
+          <div class="flex justify-between items-center text-sm"><span class="text-gray-500">생산</span><span class="font-bold text-primary-700">32 EA</span></div>
+          <div class="flex justify-between items-center text-sm"><span class="text-gray-500">검사</span><span class="font-bold text-primary-700">24 EA</span></div>
+          <div class="flex justify-between items-center text-sm"><span class="text-gray-500">적재</span><span class="font-bold text-primary-700">18 EA</span></div>
+          <div class="flex justify-between items-center text-sm pt-2 border-t border-gray-100"><span class="text-gray-500">출하</span><span class="font-bold text-primary-700">12 EA</span></div>
+          <div class="bg-primary-50 rounded-lg p-2.5 border border-primary-100 mt-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-primary-400">금일 생산중량</span>
+              <span class="text-sm font-bold text-primary-700">34.2 ton</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 품질 현황 -->
+      <div class="lg:col-span-2 card stat-card p-6 anim anim-d3">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-primary-100 rounded-lg">
+            <i data-lucide="shield-check" class="w-5 h-5 text-primary-600"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">품질검사</h3>
+            <p class="text-xs text-gray-500">QR스캔 기반</p>
+          </div>
+        </div>
+        <div class="space-y-2.5">
+          <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-emerald-600">합격률</span>
+              <span class="text-lg font-bold text-emerald-700">98.2%</span>
+            </div>
+          </div>
+          <div class="flex justify-between items-center text-sm"><span class="text-gray-500">검사 완료</span><span class="font-semibold text-gray-800">2,841건</span></div>
+          <div class="flex justify-between items-center text-sm"><span class="text-gray-500">합격</span><span class="font-semibold text-emerald-600">2,790건</span></div>
+          <div class="flex justify-between items-center text-sm"><span class="text-gray-500">불합격</span><span class="font-semibold text-red-500">51건</span></div>
+          <div class="flex justify-between items-center text-sm pt-2 border-t border-gray-100"><span class="text-gray-500">대기</span><span class="font-semibold text-amber-600">127건</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 공정 파이프라인 (Seamless Flow Chain) -->
+    <div class="card p-6 anim">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-primary-50 rounded-lg">
+            <i data-lucide="workflow" class="w-5 h-5 text-primary-500"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-900">공정 현황</h2>
+            <p class="text-xs text-gray-500 mt-0.5">BOM 연동 → 1차가공 → 생산 → 검사 → 적재 → 출하 → 설치</p>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+        <!-- BOM -->
+        <div class="relative pipeline-card bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100 group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 bg-primary-100 rounded-md group-hover:scale-110 transition-transform"><i data-lucide="file-spreadsheet" class="w-4 h-4 text-primary-600"></i></div>
+            <span class="text-sm font-semibold text-gray-800">BOM</span>
+          </div>
+          <p class="text-2xl font-extrabold text-gray-900">100<span class="text-sm font-normal text-gray-400">%</span></p>
+          <p class="text-xs text-gray-500 mt-1">1,247 부재 연동</p>
+          <div class="w-full h-1.5 bg-primary-100 rounded-full mt-3"><div class="h-full bg-primary-500 rounded-full" style="width:100%"></div></div>
+          <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+        </div>
+        <!-- 1차가공 -->
+        <div class="relative pipeline-card bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100 group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 bg-primary-100 rounded-md group-hover:scale-110 transition-transform"><i data-lucide="scissors" class="w-4 h-4 text-primary-600"></i></div>
+            <span class="text-sm font-semibold text-gray-800">1차가공</span>
+          </div>
+          <p class="text-2xl font-extrabold text-gray-900">88.9<span class="text-sm font-normal text-gray-400">%</span></p>
+          <p class="text-xs text-gray-500 mt-1">2,890 / 3,248</p>
+          <div class="w-full h-1.5 bg-primary-100 rounded-full mt-3"><div class="progress-bar h-full bg-primary-500 rounded-full" style="width:88.9%"></div></div>
+          <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+        </div>
+        <!-- 생산 -->
+        <div class="relative pipeline-card bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100 group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 bg-primary-100 rounded-md group-hover:scale-110 transition-transform"><i data-lucide="cog" class="w-4 h-4 text-primary-600"></i></div>
+            <span class="text-sm font-semibold text-gray-800">생산</span>
+          </div>
+          <p class="text-2xl font-extrabold text-gray-900">72.1<span class="text-sm font-normal text-gray-400">%</span></p>
+          <p class="text-xs text-gray-500 mt-1">2,343 / 3,248</p>
+          <div class="w-full h-1.5 bg-primary-100 rounded-full mt-3"><div class="progress-bar h-full bg-primary-500 rounded-full" style="width:72.1%"></div></div>
+          <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+        </div>
+        <!-- 검사 -->
+        <div class="relative pipeline-card bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100 group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 bg-primary-100 rounded-md group-hover:scale-110 transition-transform"><i data-lucide="clipboard-check" class="w-4 h-4 text-primary-600"></i></div>
+            <span class="text-sm font-semibold text-gray-800">검사</span>
+          </div>
+          <p class="text-2xl font-extrabold text-gray-900">62.4<span class="text-sm font-normal text-gray-400">%</span></p>
+          <p class="text-xs text-gray-500 mt-1">2,028 / 3,248</p>
+          <div class="w-full h-1.5 bg-primary-100 rounded-full mt-3"><div class="progress-bar h-full bg-primary-500 rounded-full" style="width:62.4%"></div></div>
+          <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+        </div>
+        <!-- 적재 -->
+        <div class="relative pipeline-card bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100 group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 bg-primary-100 rounded-md group-hover:scale-110 transition-transform"><i data-lucide="package" class="w-4 h-4 text-primary-600"></i></div>
+            <span class="text-sm font-semibold text-gray-800">적재</span>
+          </div>
+          <p class="text-2xl font-extrabold text-gray-900">56.5<span class="text-sm font-normal text-gray-400">%</span></p>
+          <p class="text-xs text-gray-500 mt-1">1,834 / 3,248</p>
+          <div class="w-full h-1.5 bg-primary-100 rounded-full mt-3"><div class="progress-bar h-full bg-primary-500 rounded-full" style="width:56.5%"></div></div>
+          <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+        </div>
+        <!-- 출하 -->
+        <div class="relative pipeline-card bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100 group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 bg-primary-100 rounded-md group-hover:scale-110 transition-transform"><i data-lucide="truck" class="w-4 h-4 text-primary-600"></i></div>
+            <span class="text-sm font-semibold text-gray-800">출하</span>
+          </div>
+          <p class="text-2xl font-extrabold text-gray-900">43.7<span class="text-sm font-normal text-gray-400">%</span></p>
+          <p class="text-xs text-gray-500 mt-1">1,420 / 3,248</p>
+          <div class="w-full h-1.5 bg-primary-100 rounded-full mt-3"><div class="progress-bar h-full bg-primary-500 rounded-full" style="width:43.7%"></div></div>
+          <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+        </div>
+        <!-- 설치 -->
+        <div class="pipeline-card bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100 group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="p-1.5 bg-primary-100 rounded-md group-hover:scale-110 transition-transform"><i data-lucide="hard-hat" class="w-4 h-4 text-primary-600"></i></div>
+            <span class="text-sm font-semibold text-gray-800">설치</span>
+          </div>
+          <p class="text-2xl font-extrabold text-gray-900">31.2<span class="text-sm font-normal text-gray-400">%</span></p>
+          <p class="text-xs text-gray-500 mt-1">1,014 / 3,248</p>
+          <div class="w-full h-1.5 bg-primary-100 rounded-full mt-3"><div class="progress-bar h-full bg-primary-500 rounded-full" style="width:31.2%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 알림 (공정 파이프라인 바로 아래) -->
+    <div class="card p-5 anim">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2 bg-red-100 rounded-lg"><i data-lucide="bell-ring" class="w-5 h-5 text-red-600"></i></div>
+        <div>
+          <h2 class="text-base font-semibold text-gray-900">알림</h2>
+          <p class="text-xs text-gray-500 mt-0.5">확인 필요 항목</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div class="flex items-start gap-2"><i data-lucide="alert-circle" class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0"></i><div><p class="text-sm font-semibold text-red-800">자재 부족 경고</p><p class="text-xs text-red-600 mt-1">H-400×200 재고 3본 (소요 15본)</p><p class="text-[11px] text-red-400 mt-0.5">구매요청 필요</p></div></div>
+        </div>
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <div class="flex items-start gap-2"><i data-lucide="clock" class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"></i><div><p class="text-sm font-semibold text-amber-800">4차 출하 납기 D-3</p><p class="text-xs text-amber-600 mt-1">2공구 198부재 중 142 준비완료</p><p class="text-[11px] text-amber-400 mt-0.5">적재 56부재 잔여</p></div></div>
+        </div>
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="flex items-start gap-2"><i data-lucide="clipboard-check" class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0"></i><div><p class="text-sm font-semibold text-blue-800">검사 요청 127건</p><p class="text-xs text-blue-600 mt-1">3공구 검사 대기 집중</p></div></div>
+        </div>
+        <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+          <div class="flex items-start gap-2"><i data-lucide="file-check" class="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0"></i><div><p class="text-sm font-semibold text-gray-800">전자결재 대기 3건</p><p class="text-xs text-gray-600 mt-1">구매발주 2건, 출하승인 1건</p></div></div>
+        </div>
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+          <div class="flex items-start gap-2"><i data-lucide="truck" class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"></i><div><p class="text-sm font-semibold text-emerald-800">입고 완료</p><p class="text-xs text-emerald-600 mt-1">H-300×300 18본 검수완료</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Tabs -->
+    <div class="card overflow-hidden anim">
+      <div class="flex items-center border-b border-gray-200 overflow-x-auto">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-prod')"><i data-lucide="bar-chart-3" class="w-4 h-4"></i>월별 생산</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-cutting')"><i data-lucide="shopping-cart" class="w-4 h-4"></i>구매·재고</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-zone')"><i data-lucide="grid-3x3" class="w-4 h-4"></i>공구별 현황</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-ship')"><i data-lucide="truck" class="w-4 h-4"></i>차수별 출하</button>
+      </div>
+
+      <!-- Tab: 월별 생산 -->
+      <div id="tab-prod" class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-1">월별 생산 실적 (중량)</h3>
+            <p class="text-xs text-gray-500 mb-4">2026년 생산 계획 대비 실적 (ton)</p>
+            <div class="h-72"><canvas id="chartMonthly"></canvas></div>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-1">공정별 누적 실적</h3>
+            <p class="text-xs text-gray-500 mb-4">공정 단계별 누적 처리 중량 추이</p>
+            <div class="h-72"><canvas id="chartProcess"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: 구매·재고 -->
+      <div id="tab-cutting" class="p-6 hidden">
+        <!-- 구매 진행 플로우 -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+          <div class="relative text-center bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100">
+            <div class="p-2 bg-primary-100 rounded-lg inline-block mb-2"><i data-lucide="calculator" class="w-5 h-5 text-primary-600"></i></div>
+            <p class="text-xs font-semibold text-gray-800">자재소요 산출</p>
+            <p class="text-lg font-extrabold text-gray-900 mt-1">847<span class="text-xs font-normal text-gray-400"> 본</span></p>
+            <p class="text-[10px] text-gray-500 mt-0.5">1,245.6 ton</p>
+            <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+          <div class="relative text-center bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100">
+            <div class="p-2 bg-primary-100 rounded-lg inline-block mb-2"><i data-lucide="file-text" class="w-5 h-5 text-primary-600"></i></div>
+            <p class="text-xs font-semibold text-gray-800">구매요청 (PR)</p>
+            <p class="text-lg font-extrabold text-gray-900 mt-1">38<span class="text-xs font-normal text-gray-400"> 건</span></p>
+            <p class="text-[10px] text-gray-500 mt-0.5">결재승인 35건</p>
+            <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+          <div class="relative text-center bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100">
+            <div class="p-2 bg-primary-100 rounded-lg inline-block mb-2"><i data-lucide="shopping-cart" class="w-5 h-5 text-primary-600"></i></div>
+            <p class="text-xs font-semibold text-gray-800">구매발주 (PO)</p>
+            <p class="text-lg font-extrabold text-gray-900 mt-1">32<span class="text-xs font-normal text-gray-400"> 건</span></p>
+            <p class="text-[10px] text-gray-500 mt-0.5">확정 28건 · 미확정 4건</p>
+            <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+          <div class="relative text-center bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100">
+            <div class="p-2 bg-primary-100 rounded-lg inline-block mb-2"><i data-lucide="package-check" class="w-5 h-5 text-primary-600"></i></div>
+            <p class="text-xs font-semibold text-gray-800">입고 완료</p>
+            <p class="text-lg font-extrabold text-gray-900 mt-1">724<span class="text-xs font-normal text-gray-400"> 본</span></p>
+            <p class="text-[10px] text-amber-600 mt-0.5">미납 123본 (14.5%)</p>
+            <div class="hidden sm:block absolute -right-2 top-1/2 -translate-y-1/2 text-gray-300 z-10"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+          </div>
+          <div class="text-center bg-gradient-to-br from-primary-50 to-white rounded-xl p-4 border border-primary-100">
+            <div class="p-2 bg-primary-100 rounded-lg inline-block mb-2"><i data-lucide="warehouse" class="w-5 h-5 text-primary-600"></i></div>
+            <p class="text-xs font-semibold text-gray-800">현재 재고</p>
+            <p class="text-lg font-extrabold text-gray-900 mt-1">1,089<span class="text-xs font-normal text-gray-400"> ton</span></p>
+            <p class="text-[10px] text-gray-500 mt-0.5">Heat No. 추적 관리</p>
+          </div>
+        </div>
+
+        <!-- BOM 구매상태 + 자재현황 테이블 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- BOM 구매상태 분포 -->
+          <div>
+            <h4 class="text-sm font-semibold text-gray-900 mb-3">BOM 구매 진행 상태</h4>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between items-center mb-1.5">
+                  <span class="text-xs font-medium text-gray-600">미요청</span>
+                  <span class="text-xs font-bold text-gray-800">187 부재 <span class="text-gray-400 font-normal">(15%)</span></span>
+                </div>
+                <div class="w-full h-3 bg-gray-100 rounded-full"><div class="h-full bg-gray-400 rounded-full" style="width:15%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-1.5">
+                  <span class="text-xs font-medium text-primary-600">구매요청 완료 (PR)</span>
+                  <span class="text-xs font-bold text-gray-800">124 부재 <span class="text-gray-400 font-normal">(10%)</span></span>
+                </div>
+                <div class="w-full h-3 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:10%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-1.5">
+                  <span class="text-xs font-medium text-primary-600">구매발주 완료 (PO)</span>
+                  <span class="text-xs font-bold text-gray-800">936 부재 <span class="text-gray-400 font-normal">(75%)</span></span>
+                </div>
+                <div class="w-full h-3 bg-gray-100 rounded-full"><div class="h-full bg-primary-600 rounded-full" style="width:75%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 규격별 자재 현황 -->
+          <div>
+            <h4 class="text-sm font-semibold text-gray-900 mb-3">규격별 자재 현황</h4>
+            <div class="overflow-hidden rounded-xl border border-gray-200">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="bg-gray-50 border-b border-gray-200">
+                    <th class="text-left py-2.5 px-3 text-xs font-semibold text-gray-500">규격</th>
+                    <th class="text-center py-2.5 px-3 text-xs font-semibold text-gray-500">소요</th>
+                    <th class="text-center py-2.5 px-3 text-xs font-semibold text-gray-500">발주</th>
+                    <th class="text-center py-2.5 px-3 text-xs font-semibold text-gray-500">입고</th>
+                    <th class="text-center py-2.5 px-3 text-xs font-semibold text-gray-500">재고</th>
+                    <th class="text-center py-2.5 px-3 text-xs font-semibold text-gray-500">상태</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr>
+                    <td class="py-2.5 px-3 font-medium text-gray-800">H-400×200</td>
+                    <td class="py-2.5 px-3 text-center text-gray-600">156</td>
+                    <td class="py-2.5 px-3 text-center text-primary-600 font-semibold">156</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-semibold">141</td>
+                    <td class="py-2.5 px-3 text-center font-semibold">3</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-100 text-red-700">부족</span></td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-medium text-gray-800">H-300×300</td>
+                    <td class="py-2.5 px-3 text-center text-gray-600">224</td>
+                    <td class="py-2.5 px-3 text-center text-primary-600 font-semibold">224</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-semibold">218</td>
+                    <td class="py-2.5 px-3 text-center font-semibold">24</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">정상</span></td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-medium text-gray-800">H-350×175</td>
+                    <td class="py-2.5 px-3 text-center text-gray-600">189</td>
+                    <td class="py-2.5 px-3 text-center text-primary-600 font-semibold">189</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-semibold">172</td>
+                    <td class="py-2.5 px-3 text-center font-semibold">15</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">정상</span></td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-medium text-gray-800">H-200×200</td>
+                    <td class="py-2.5 px-3 text-center text-gray-600">98</td>
+                    <td class="py-2.5 px-3 text-center text-primary-600 font-semibold">98</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-semibold">98</td>
+                    <td class="py-2.5 px-3 text-center font-semibold">12</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">정상</span></td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-medium text-gray-800">PL-12</td>
+                    <td class="py-2.5 px-3 text-center text-gray-600">85</td>
+                    <td class="py-2.5 px-3 text-center text-primary-600 font-semibold">65</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-semibold">52</td>
+                    <td class="py-2.5 px-3 text-center font-semibold">8</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700">발주중</span></td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-3 font-medium text-gray-800">PL-16</td>
+                    <td class="py-2.5 px-3 text-center text-gray-600">95</td>
+                    <td class="py-2.5 px-3 text-center text-primary-600 font-semibold">78</td>
+                    <td class="py-2.5 px-3 text-center text-emerald-600 font-semibold">43</td>
+                    <td class="py-2.5 px-3 text-center font-semibold">5</td>
+                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700">발주중</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: 공구별 -->
+      <div id="tab-zone" class="p-6 hidden">
+        <h3 class="text-base font-semibold text-gray-900 mb-1">공구(Zone)별 생산 현황</h3>
+        <p class="text-xs text-gray-500 mb-4">건축 현장 공구/절주 기준 공정 진행률</p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="h-80"><canvas id="chartZone"></canvas></div>
+          <div class="space-y-3">
+            <div class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50/30 transition-colors">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2"><span class="text-xs font-bold text-white bg-primary-600 px-2.5 py-1 rounded-md">1공구</span><span class="text-sm font-semibold text-gray-800">지하층 기둥/보</span></div>
+                <span class="text-lg font-bold text-primary-700">92%</span>
+              </div>
+              <div class="flex gap-4 text-xs text-gray-500 mb-2"><span>부재 312EA</span><span>486.2ton</span><span>절주 B1~B3</span></div>
+              <div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:92%"></div></div>
+            </div>
+            <div class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50/30 transition-colors">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2"><span class="text-xs font-bold text-white bg-primary-600 px-2.5 py-1 rounded-md">2공구</span><span class="text-sm font-semibold text-gray-800">1~3층 기둥/보</span></div>
+                <span class="text-lg font-bold text-primary-700">74%</span>
+              </div>
+              <div class="flex gap-4 text-xs text-gray-500 mb-2"><span>부재 428EA</span><span>712.4ton</span><span>절주 1F~3F</span></div>
+              <div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:74%"></div></div>
+            </div>
+            <div class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50/30 transition-colors">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2"><span class="text-xs font-bold text-white bg-primary-600 px-2.5 py-1 rounded-md">3공구</span><span class="text-sm font-semibold text-gray-800">4~6층 기둥/보</span></div>
+                <span class="text-lg font-bold text-primary-700">45%</span>
+              </div>
+              <div class="flex gap-4 text-xs text-gray-500 mb-2"><span>부재 507EA</span><span>858.2ton</span><span>절주 4F~6F</span></div>
+              <div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:45%"></div></div>
+            </div>
+            <div class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50/30 transition-colors">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2"><span class="text-xs font-bold text-white bg-primary-600 px-2.5 py-1 rounded-md">4공구</span><span class="text-sm font-semibold text-gray-800">지붕층 트러스</span></div>
+                <span class="text-lg font-bold text-primary-700">12%</span>
+              </div>
+              <div class="flex gap-4 text-xs text-gray-500 mb-2"><span>부재 196EA</span><span>400.0ton</span><span>절주 RF</span></div>
+              <div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:12%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: 차수별 출하 -->
+      <div id="tab-ship" class="p-6 hidden">
+        <h3 class="text-base font-semibold text-gray-900 mb-1">차수별 출하 현황</h3>
+        <p class="text-xs text-gray-500 mb-4">현장 납품 차수(Wave) 기준 출하 계획 및 실적 · QR 확인</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b-2 border-gray-200">
+                <th class="text-left py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">차수</th>
+                <th class="text-left py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">공구</th>
+                <th class="text-right py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">부재수</th>
+                <th class="text-right py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">중량(ton)</th>
+                <th class="text-left py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">출하예정일</th>
+                <th class="text-center py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">진행</th>
+                <th class="text-left py-3.5 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">상태</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="hover:bg-gray-50 transition-colors"><td class="py-4 px-4 font-bold">1차</td><td class="py-4 px-4"><span class="px-2 py-0.5 bg-primary-50 text-primary-700 rounded text-xs font-medium">1공구</span></td><td class="py-4 px-4 text-right font-semibold">186</td><td class="py-4 px-4 text-right font-semibold">312.4</td><td class="py-4 px-4 text-gray-600">2026-01-15</td><td class="py-4 px-4"><div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:100%"></div></div></td><td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700"><span class="status-dot bg-emerald-500"></span>완료</span></td></tr>
+              <tr class="hover:bg-gray-50 transition-colors"><td class="py-4 px-4 font-bold">2차</td><td class="py-4 px-4"><span class="px-2 py-0.5 bg-primary-50 text-primary-700 rounded text-xs font-medium">1공구</span></td><td class="py-4 px-4 text-right font-semibold">126</td><td class="py-4 px-4 text-right font-semibold">173.8</td><td class="py-4 px-4 text-gray-600">2026-01-28</td><td class="py-4 px-4"><div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:100%"></div></div></td><td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700"><span class="status-dot bg-emerald-500"></span>완료</span></td></tr>
+              <tr class="hover:bg-gray-50 transition-colors"><td class="py-4 px-4 font-bold">3차</td><td class="py-4 px-4"><span class="px-2 py-0.5 bg-primary-50 text-primary-700 rounded text-xs font-medium">2공구</span></td><td class="py-4 px-4 text-right font-semibold">214</td><td class="py-4 px-4 text-right font-semibold">356.2</td><td class="py-4 px-4 text-gray-600">2026-02-10</td><td class="py-4 px-4"><div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:100%"></div></div></td><td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700"><span class="status-dot bg-emerald-500"></span>완료</span></td></tr>
+              <tr class="hover:bg-gray-50 transition-colors"><td class="py-4 px-4 font-bold">4차</td><td class="py-4 px-4"><span class="px-2 py-0.5 bg-primary-50 text-primary-700 rounded text-xs font-medium">2공구</span></td><td class="py-4 px-4 text-right font-semibold">198</td><td class="py-4 px-4 text-right font-semibold">289.4</td><td class="py-4 px-4 text-gray-600">2026-02-25</td><td class="py-4 px-4"><div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-500 rounded-full" style="width:72%"></div></div></td><td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-700"><span class="status-dot bg-primary-500 animate-pulse"></span>출하중</span></td></tr>
+              <tr class="hover:bg-gray-50 transition-colors"><td class="py-4 px-4 font-bold">5차</td><td class="py-4 px-4"><span class="px-2 py-0.5 bg-primary-50 text-primary-700 rounded text-xs font-medium">3공구</span></td><td class="py-4 px-4 text-right font-semibold">256</td><td class="py-4 px-4 text-right font-semibold">412.8</td><td class="py-4 px-4 text-gray-600">2026-03-15</td><td class="py-4 px-4"><div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-primary-400 rounded-full" style="width:35%"></div></div></td><td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700"><span class="status-dot bg-amber-500"></span>생산중</span></td></tr>
+              <tr class="hover:bg-gray-50 transition-colors bg-gray-50/50"><td class="py-4 px-4 font-bold">6차</td><td class="py-4 px-4"><span class="px-2 py-0.5 bg-primary-50 text-primary-700 rounded text-xs font-medium">4공구</span></td><td class="py-4 px-4 text-right font-semibold">267</td><td class="py-4 px-4 text-right font-semibold">412.2</td><td class="py-4 px-4 text-gray-600">2026-04-20</td><td class="py-4 px-4"><div class="w-full h-2 bg-gray-100 rounded-full"><div class="h-full bg-gray-300 rounded-full" style="width:5%"></div></div></td><td class="py-4 px-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600"><span class="status-dot bg-gray-400"></span>대기</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    </div><!-- /view-project -->
+
+    <!-- Footer -->
+    <div class="text-center py-4 text-xs text-gray-400 border-t border-gray-200 mt-2">
+      <p><span class="font-semibold text-primary-400">sMES</span> Steel Manufacturing Execution System &middot; &copy; 2026 이엔지소프트(ENGSOFT Co., Ltd.)</p>
+    </div>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    // Init all-projects charts on load
+    setTimeout(() => { initAllCharts(); window._allInit = true; }, 100);
+
+    // Project view switching
+    function switchProject(val) {
+      const allView = document.getElementById('view-all');
+      const projView = document.getElementById('view-project');
+      const pageHeader = document.querySelector('#pageHeader');
+      if (val === 'all') {
+        allView.classList.remove('hidden');
+        projView.classList.add('hidden');
+        if (!window._allInit) { initAllCharts(); window._allInit = true; }
+      } else {
+        allView.classList.add('hidden');
+        projView.classList.remove('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function initAllCharts() {
+      (() => {
+        const ctx = document.getElementById('chartAllProjects');
+        const c = ctx.getContext('2d');
+        const g1 = grad(c, 'rgba(37,99,235,0.18)', 'rgba(37,99,235,0.04)');
+        const g2 = grad(c, 'rgba(16,185,129,0.85)', 'rgba(52,211,153,0.55)');
+        const g3 = grad(c, 'rgba(59,130,246,0.8)', 'rgba(147,197,253,0.5)');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['세종 신축공사', '부산 물류센터', '인천 공장증축'],
+            datasets: [
+              { label: '계획 (ton)', data: [2456.8, 1624.2, 1346.0], backgroundColor: g1, borderColor:'rgba(37,99,235,0.3)', borderWidth:1.5, ...barBase, borderRadius:8, order:3 },
+              { label: '생산완료 (ton)', data: [1628.4, 682.2, 107.7], backgroundColor: g2, ...barBase, order:2 },
+              { label: '출하완료 (ton)', data: [1073.6, 357.3, 0], backgroundColor: g3, ...barBase, order:1 },
+            ]
+          },
+          options: { responsive: true, maintainAspectRatio: false,
+            plugins: { legend: legendBase, tooltip: tt, datalabels:{ display:function(ctx){return ctx.datasetIndex===1 && ctx.dataset.data[ctx.dataIndex]>0}, ...dlTon } },
+            scales: { ...scaleBase, x:{ ...scaleBase.x, ticks:{...ts,font:{...cf,size:12,weight:'600'}} }, y:{ ...scaleBase.y, ticks:{...ts,callback:v=>v+'t'} } },
+            barPercentage:0.65, categoryPercentage:0.7
+          }
+        });
+      })();
+      new Chart(document.getElementById('chartAllLoss'), {
+        type: 'line',
+        data: {
+          labels: ['1월','2월','3월','4월','5월','6월'],
+          datasets: [
+            { label: '세종', data: [8.2, 7.8, 7.5, 7.6, 7.3, 7.5], borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.06)', fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 7, pointBackgroundColor: '#fff', pointBorderColor: '#2563eb', pointBorderWidth: 2.5 },
+            { label: '부산', data: [9.1, 8.4, 7.8, 7.2, 6.9, 6.9], borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.06)', fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 7, pointBackgroundColor: '#fff', pointBorderColor: '#a855f7', pointBorderWidth: 2.5 },
+            { label: '인천', data: [null, null, null, null, 10.5, 9.2], borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.06)', fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 7, pointBackgroundColor: '#fff', pointBorderColor: '#f59e0b', pointBorderWidth: 2.5 },
+            { label: '목표선 (8%)', data: [8, 8, 8, 8, 8, 8], borderColor: '#ef4444', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false },
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false,
+          plugins: { legend: legendBase, tooltip: tt },
+          scales: { x:{ grid:gcd, ticks:ts, border:{display:false} }, y:{ grid:gcd, ticks:{...ts,callback:v=>v+'%'}, border:{display:false}, min:4, max:12 } }
+        }
+      });
+    }
+
+    function switchTab(btn, tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.add('hidden'));
+      btn.classList.add('active');
+      document.getElementById(tabId).classList.remove('hidden');
+      lucide.createIcons();
+      if (tabId === 'tab-cutting' && !window._ci) { initCutting(); window._ci = true; }
+      if (tabId === 'tab-zone' && !window._zi) { initZone(); window._zi = true; }
+    }
+
+    // Register datalabels plugin
+    Chart.register(ChartDataLabels);
+    // Global: disable datalabels by default, enable per-chart
+    Chart.defaults.set('plugins.datalabels', { display: false });
+
+    const cf = { family:'Noto Sans KR' };
+    const tt = { backgroundColor:'rgba(255,255,255,0.96)', titleColor:'#111827', bodyColor:'#4b5563', borderColor:'#e5e7eb', borderWidth:1, cornerRadius:10, padding:{top:12,bottom:12,left:14,right:14}, titleFont:{...cf,size:13,weight:'600'}, bodyFont:{...cf,size:12}, boxPadding:6, caretSize:6, displayColors:true, usePointStyle:true };
+    const gc = '#f0f0f3';
+    const gcd = { color:gc, drawBorder:false, lineWidth:1, borderDash:[4,4] };
+    const ts = { font:{...cf,size:11}, color:'#9ca3af', padding:8 };
+    const barBase = { borderRadius:10, borderSkipped:false, maxBarThickness:38, borderWidth:0 };
+    const scaleBase = { x:{ grid:{display:false}, ticks:ts, border:{display:false} }, y:{ grid:gcd, ticks:ts, border:{display:false}, beginAtZero:true } };
+    const legendBase = { labels:{font:{...cf,size:12},usePointStyle:true,pointStyleWidth:10,padding:18,boxWidth:8,boxHeight:8} };
+    // datalabel presets
+    const dlTon = { display:function(ctx){return ctx.dataset.data[ctx.dataIndex]>0}, anchor:'end', align:'end', offset:2, font:{family:'Noto Sans KR',size:10,weight:'600'}, color:'#6b7280', formatter:v=>v?v.toLocaleString()+'t':'' };
+    const dlPct = { display:function(ctx){return ctx.dataset.data[ctx.dataIndex]>0}, anchor:'end', align:'end', offset:2, font:{family:'Noto Sans KR',size:10,weight:'600'}, color:'#6b7280', formatter:v=>v?v+'%':'' };
+    // gradient helper
+    function grad(ctx, c1, c2, h) { const g=ctx.createLinearGradient(0,0,0,h||400); g.addColorStop(0,c1); g.addColorStop(1,c2); return g; }
+    function hGrad(ctx, c1, c2, w) { const g=ctx.createLinearGradient(0,0,w||600,0); g.addColorStop(0,c1); g.addColorStop(1,c2); return g; }
+
+    (() => {
+      const ctx = document.getElementById('chartMonthly');
+      const g1 = grad(ctx.getContext('2d'), 'rgba(37,99,235,0.18)', 'rgba(37,99,235,0.04)');
+      const g2 = grad(ctx.getContext('2d'), 'rgba(59,130,246,0.85)', 'rgba(96,165,250,0.55)');
+      new Chart(ctx, {
+        type:'bar',
+        data:{
+          labels:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+          datasets:[
+            { label:'계획(ton)', data:[200,220,240,260,250,240,230,220,210,200,190,180], backgroundColor:g1, borderColor:'rgba(37,99,235,0.3)', borderWidth:1.5, ...barBase, borderRadius:8, order:2 },
+            { label:'실적(ton)', data:[195,232,248,245,258,null,null,null,null,null,null,null], backgroundColor:g2, ...barBase, order:1 }
+          ]
+        },
+        options:{ responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:legendBase, tooltip:tt, datalabels:{ display:function(ctx){return ctx.datasetIndex===1 && ctx.dataset.data[ctx.dataIndex]!=null && ctx.dataset.data[ctx.dataIndex]>0}, ...dlTon } },
+          scales:{ ...scaleBase, y:{ ...scaleBase.y, ticks:{...ts,callback:v=>v+'t'} } },
+          barPercentage:0.7, categoryPercentage:0.7
+        }
+      });
+    })();
+
+    new Chart(document.getElementById('chartProcess'), {
+      type:'line',
+      data:{
+        labels:['1월','2월','3월','4월','5월','6월'],
+        datasets:[
+          { label:'1차가공', data:[195,427,675,920,1178,1458], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.06)', fill:true, tension:0.4, borderWidth:2.5, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:'#fff', pointBorderColor:'#3b82f6', pointBorderWidth:2.5 },
+          { label:'생산', data:[140,348,580,810,1042,1280], borderColor:'#a855f7', backgroundColor:'rgba(168,85,247,0.06)', fill:true, tension:0.4, borderWidth:2.5, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:'#fff', pointBorderColor:'#a855f7', pointBorderWidth:2.5 },
+          { label:'검사', data:[105,290,498,698,892,1098], borderColor:'#06b6d4', backgroundColor:'rgba(6,182,212,0.06)', fill:true, tension:0.4, borderWidth:2.5, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:'#fff', pointBorderColor:'#06b6d4', pointBorderWidth:2.5 },
+          { label:'적재', data:[80,235,420,610,795,985], borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.06)', fill:true, tension:0.4, borderWidth:2.5, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:'#fff', pointBorderColor:'#f59e0b', pointBorderWidth:2.5 },
+          { label:'출하', data:[50,180,350,530,710,890], borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.06)', fill:true, tension:0.4, borderWidth:2.5, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:'#fff', pointBorderColor:'#10b981', pointBorderWidth:2.5 },
+          { label:'설치', data:[0,80,220,380,540,710], borderColor:'#f43f5e', backgroundColor:'rgba(244,63,94,0.06)', fill:true, tension:0.4, borderWidth:2.5, pointRadius:4, pointHoverRadius:7, pointBackgroundColor:'#fff', pointBorderColor:'#f43f5e', pointBorderWidth:2.5, borderDash:[6,3] },
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:legendBase, tooltip:tt },
+        scales:{ x:{ grid:gcd, ticks:ts, border:{display:false} }, y:{ grid:gcd, ticks:{...ts,callback:v=>v+'t'}, border:{display:false}, beginAtZero:true } }
+      }
+    });
+
+    function initCutting() {
+      // 컷팅플랜 탭 초기화 (차트 제거됨, 구매·재고 연동 섹션만 유지)
+    }
+
+    function initZone() {
+      (() => {
+        const ctx = document.getElementById('chartZone');
+        const c = ctx.getContext('2d');
+        const g1 = grad(c, 'rgba(59,130,246,0.85)', 'rgba(96,165,250,0.5)');
+        const g2 = grad(c, 'rgba(168,85,247,0.85)', 'rgba(196,148,252,0.5)');
+        const g3 = grad(c, 'rgba(245,158,11,0.85)', 'rgba(251,191,36,0.5)');
+        const g4 = grad(c, 'rgba(16,185,129,0.85)', 'rgba(52,211,153,0.5)');
+        new Chart(ctx, {
+          type:'bar',
+          data:{
+            labels:['1공구\n(지하층)','2공구\n(1~3층)','3공구\n(4~6층)','4공구\n(지붕층)'],
+            datasets:[
+              { label:'1차가공', data:[98,85,62,18], backgroundColor:g1, ...barBase },
+              { label:'생산', data:[95,78,48,8], backgroundColor:g2, ...barBase },
+              { label:'검사', data:[92,68,35,5], backgroundColor:g3, ...barBase },
+              { label:'출하', data:[90,56,22,2], backgroundColor:g4, ...barBase },
+            ]
+          },
+          options:{ responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:legendBase, tooltip:tt, datalabels:{ ...dlPct, display:function(ctx){return ctx.datasetIndex===0 && ctx.dataset.data[ctx.dataIndex]>0} } },
+            scales:{ ...scaleBase, x:{ ...scaleBase.x, ticks:{...ts,font:{...cf,size:11,weight:'600'}} }, y:{ ...scaleBase.y, ticks:{...ts,callback:v=>v+'%'}, max:100 } },
+            barPercentage:0.7, categoryPercentage:0.65
+          }
+        });
+      })();
+    }
+  </script>
+</body>
+</html>

@@ -8,6 +8,7 @@ const Navbar: React.FC = () => {
   const navItems = [
     { name: '제품소개', path: '/' },
     { name: '주요기능', path: '/about' },
+    { name: '대시보드', path: '/dashboard' },
     { name: '사용방법', path: '/usage' },
   ];
 
