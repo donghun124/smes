@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
+const slides = [
+  { src: '/Image/F/공정현황_BIM.png', alt: 'BIM 공정현황' },
+  { src: '/Image/F/공정현황_MCS.png', alt: 'MCS 부재별 공정현황' },
+  { src: '/Image/F/공정현황_주간실적.png', alt: '주간실적조회' },
+  { src: '/Image/F/공정현황_생산계획실적.png', alt: '생산계획/실적조회' },
+  { src: '/Image/F/공정현황_총괄.png', alt: '총괄현황' },
+];
+
 const Home: React.FC = () => {
+  const [current, setCurrent] = useState(0);
+
+  const next = useCallback(() => setCurrent((p) => (p + 1) % slides.length), []);
+  const prev = useCallback(() => setCurrent((p) => (p - 1 + slides.length) % slides.length), []);
+
+  useEffect(() => {
+    const timer = setInterval(next, 4000);
+    return () => clearInterval(timer);
+  }, [next]);
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -33,12 +51,48 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-white p-2 rounded-xl shadow-2xl overflow-hidden transform hover:scale-105 transition-transform duration-500">
-                <img 
-                  src="/Image/Main.png" 
-                  alt="SMES Smart Manufacturing Execution System" 
-                  className="w-full h-auto rounded-lg"
-                />
+              <div className="bg-white p-2 rounded-xl shadow-2xl overflow-hidden">
+                <div className="relative">
+                  {slides.map((slide, i) => (
+                    <img
+                      key={i}
+                      src={slide.src}
+                      alt={slide.alt}
+                      className={`w-full h-auto rounded-lg transition-opacity duration-700 ${
+                        i === current ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                      }`}
+                    />
+                  ))}
+                </div>
+                {/* Controls */}
+                <button
+                  onClick={prev}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 hover:bg-opacity-60 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <button
+                  onClick={next}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 hover:bg-opacity-60 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+                {/* Dots */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                  {slides.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrent(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        i === current ? 'bg-blue-600 w-6' : 'bg-gray-400 bg-opacity-60'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Slide label */}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 text-white text-sm px-4 py-1.5 rounded-full backdrop-blur-sm">
+                {slides[current].alt}
               </div>
             </div>
           </div>
