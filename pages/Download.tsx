@@ -42,11 +42,11 @@ const Download: React.FC = () => {
         <h2 className="text-2xl font-bold mb-6 border-l-4 border-green-600 pl-4">BOM 등록용 Tekla 레포트</h2>
 
         <div className="bg-gray-50 rounded-3xl p-8 lg:p-12 mb-8 border border-gray-200">
-          <div className="flex justify-center gap-6 mb-8 flex-wrap">
+          <div className="grid grid-cols-2 gap-6 mb-8">
             <a
               href={import.meta.env.BASE_URL + "files/SMES_PART_LIST.rpt"}
               download="SMES_PART_LIST.rpt"
-              className="bg-white border-2 border-green-600 hover:bg-green-50 rounded-xl p-8 transition-all shadow-md hover:shadow-xl group cursor-pointer max-w-sm w-full no-underline"
+              className="bg-white border-2 border-green-600 hover:bg-green-50 rounded-xl p-8 transition-all shadow-md hover:shadow-xl group cursor-pointer no-underline"
             >
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6 group-hover:bg-green-200 transition-colors">
@@ -63,7 +63,7 @@ const Download: React.FC = () => {
             <a
               href={import.meta.env.BASE_URL + "files/SMES_CHECK_LIST.rpt"}
               download="SMES_CHECK_LIST.rpt"
-              className="bg-white border-2 border-green-600 hover:bg-green-50 rounded-xl p-8 transition-all shadow-md hover:shadow-xl group cursor-pointer max-w-sm w-full no-underline"
+              className="bg-white border-2 border-green-600 hover:bg-green-50 rounded-xl p-8 transition-all shadow-md hover:shadow-xl group cursor-pointer no-underline"
             >
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6 group-hover:bg-green-200 transition-colors">
