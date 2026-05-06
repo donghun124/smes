@@ -1,0 +1,1377 @@
+template _tmp_832
+{
+    name = "template1";
+    type = TEXTUAL;
+    width = 350;
+    maxheight = 10000000;
+    columns = (1, 1);
+    gap = 0;
+    fillpolicy = EVEN;
+    filldirection = HORIZONTAL;
+    fillstartfrom = TOPLEFT;
+    margins = (1, 0, 1, 0);
+    gridxspacing = 1;
+    gridyspacing = 1;
+    version = 4.3;
+    created = "30.08.2007 10:42";
+    modified = "20.01.2026 14:13";
+    notes = "";
+
+    pageheader _tmp_833
+    {
+        name = "PageHeader";
+        height = 3;
+        outputpolicy = NONE;
+
+        text _tmp_1647
+        {
+            name = "Quantity";
+            x1 = 215;
+            y1 = 1;
+            x2 = 215;
+            y2 = 1;
+            string = "LENGTH";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_1649
+        {
+            name = "Mark";
+            x1 = 8;
+            y1 = 1;
+            x2 = 8;
+            y2 = 1;
+            string = "Drawing No.";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_4987
+        {
+            name = "Text_2";
+            x1 = 96;
+            y1 = 1;
+            x2 = 96;
+            y2 = 1;
+            string = "ELEVATION";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_3218
+        {
+            name = "Text_17";
+            x1 = 71;
+            y1 = 1;
+            x2 = 71;
+            y2 = 1;
+            string = "DESCRIPTION";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_903
+        {
+            name = "Text_3";
+            x1 = 0;
+            y1 = 1;
+            x2 = 0;
+            y2 = 1;
+            string = "NO";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_2
+        {
+            name = "Text_29";
+            x1 = 6;
+            y1 = 1;
+            x2 = 6;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_5
+        {
+            name = "Text_9";
+            x1 = 94;
+            y1 = 1;
+            x2 = 94;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_7
+        {
+            name = "Text_11";
+            x1 = 117;
+            y1 = 1;
+            x2 = 117;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_11
+        {
+            name = "Text_15";
+            x1 = 139;
+            y1 = 1;
+            x2 = 139;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_3
+        {
+            name = "Text_7";
+            x1 = 169;
+            y1 = 1;
+            x2 = 169;
+            y2 = 1;
+            string = "MATL";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_6
+        {
+            name = "Text_13";
+            x1 = 167;
+            y1 = 1;
+            x2 = 167;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_1
+        {
+            name = "Text_37";
+            x1 = 213;
+            y1 = 1;
+            x2 = 213;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_9
+        {
+            name = "Text_42";
+            x1 = 119;
+            y1 = 1;
+            x2 = 119;
+            y2 = 1;
+            string = "GRID X";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_4
+        {
+            name = "Text_62";
+            x1 = 39;
+            y1 = 1;
+            x2 = 39;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_16
+        {
+            name = "Text_68";
+            x1 = 69;
+            y1 = 1;
+            x2 = 69;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_23
+        {
+            name = "Text_73";
+            x1 = 41;
+            y1 = 1;
+            x2 = 41;
+            y2 = 1;
+            string = "ITEM";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_28
+        {
+            name = "Text_18";
+            x1 = 223;
+            y1 = 1;
+            x2 = 223;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_37
+        {
+            name = "Text_32";
+            x1 = 225;
+            y1 = 1;
+            x2 = 225;
+            y2 = 1;
+            string = "QTY";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_39
+        {
+            name = "Text_33";
+            x1 = 235;
+            y1 = 1;
+            x2 = 235;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_45
+        {
+            name = "Text_49";
+            x1 = 237;
+            y1 = 1;
+            x2 = 237;
+            y2 = 1;
+            string = "T/Weight(kg)";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_47
+        {
+            name = "Text_50";
+            x1 = 249;
+            y1 = 1;
+            x2 = 249;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_54
+        {
+            name = "Text_74";
+            x1 = 251;
+            y1 = 1;
+            x2 = 251;
+            y2 = 1;
+            string = "AREA(m2)";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_97
+        {
+            name = "Text_8";
+            x1 = 260;
+            y1 = 1;
+            x2 = 260;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_8
+        {
+            name = "Text_14";
+            x1 = 191;
+            y1 = 1;
+            x2 = 191;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_14
+        {
+            name = "Quantity_1";
+            x1 = 193;
+            y1 = 1;
+            x2 = 193;
+            y2 = 1;
+            string = "MEMBER SIZE";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_29
+        {
+            name = "Text_1";
+            x1 = 51;
+            y1 = 1;
+            x2 = 51;
+            y2 = 1;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_33
+        {
+            name = "Text_31";
+            x1 = 53;
+            y1 = 1;
+            x2 = 53;
+            y2 = 1;
+            string = "ZONE";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_38
+        {
+            name = "Text_34";
+            x1 = 141;
+            y1 = 1;
+            x2 = 141;
+            y2 = 1;
+            string = "GRID Y";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+
+        text _tmp_44
+        {
+            name = "Text";
+            x1 = 262;
+            y1 = 1;
+            x2 = 262;
+            y2 = 1;
+            string = "Remark";
+            fontname = "Arial";
+            fontcolor = 160;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+            isalwaysvisible = TRUE;
+            visibilityrule = "";
+        };
+    };
+
+    row _tmp_7
+    {
+        name = "SUMMARY";
+        height = 1;
+        visibility = TRUE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "ASSEMBLY";
+        sorttype = DISTINCT;
+
+        valuefield _tmp_9
+        {
+            name = "DrawingNo";
+            location = (8, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 28;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_11
+        {
+            name = "Text_43";
+            x1 = 6;
+            y1 = 0;
+            x2 = 6;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_13
+        {
+            name = "No";
+            location = (0, 0);
+            formula = "GetValue(\"ROW_IN_PAGE\")";
+            maxnumoflines = 1;
+            datatype = INTEGER;
+            class = "";
+            cacheable = FALSE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 4;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = SUM;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_15
+        {
+            name = "Text_44";
+            x1 = 94;
+            y1 = 0;
+            x2 = 94;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_19
+        {
+            name = "Text_45";
+            x1 = 117;
+            y1 = 0;
+            x2 = 117;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_23
+        {
+            name = "Text_46";
+            x1 = 139;
+            y1 = 0;
+            x2 = 139;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_29
+        {
+            name = "GridX";
+            location = (119, 0);
+            formula = "mid(GetValue(\"ASSEMBLY_POSITION_CODE\"),0,find(GetValue(\"ASSEMBLY_POSITION_CODE\"),\"/\"))";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "Length";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 19;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            unit = "mm";
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_31
+        {
+            name = "Text_48";
+            x1 = 167;
+            y1 = 0;
+            x2 = 167;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_33
+        {
+            name = "Material";
+            location = (170, 0);
+            formula = "GetValue(\"MAINPART.MATERIAL\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "Length";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 20;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            unit = "mm";
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_45
+        {
+            name = "Text_52";
+            x1 = 213;
+            y1 = 0;
+            x2 = 213;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_49
+        {
+            name = "Length";
+            location = (215, 0);
+            formula = "GetValue(\"MAINPART.LENGTH_GROSS\")";
+            maxnumoflines = 1;
+            datatype = DOUBLE;
+            class = "Length";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 8;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            unit = "mm";
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_8
+        {
+            name = "Text_65";
+            x1 = 39;
+            y1 = 0;
+            x2 = 39;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_20
+        {
+            name = "Text_71";
+            x1 = 69;
+            y1 = 0;
+            x2 = 69;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_26
+        {
+            name = "Item";
+            location = (41, 0);
+            formula = "GetValue(\"USERDEFINED.USER_FIELD_3\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 5;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_32
+        {
+            name = "Text_28";
+            x1 = 223;
+            y1 = 0;
+            x2 = 223;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_42
+        {
+            name = "Text_36";
+            x1 = 235;
+            y1 = 0;
+            x2 = 235;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_50
+        {
+            name = "Text_59";
+            x1 = 249;
+            y1 = 0;
+            x2 = 249;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_65
+        {
+            name = "Qty";
+            location = (225, 0);
+            formula = "1";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "Arial";
+            fontcolor = 153;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = 0;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_67
+        {
+            name = "Weight";
+            location = (237, 0);
+            formula = "GetValue(\"WEIGHT_GROSS\")";
+            maxnumoflines = 1;
+            datatype = DOUBLE;
+            class = "Weight";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = RIGHT;
+            visibility = TRUE;
+            angle = 0;
+            length = 8;
+            decimals = 2;
+            sortdirection = ASCENDING;
+            fontname = "Arial";
+            fontcolor = 153;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = 0;
+            oncombine = NONE;
+            unit = "kg";
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_69
+        {
+            name = "Area";
+            location = (251, 0);
+            formula = "GetValue(\"AREA\")";
+            maxnumoflines = 1;
+            datatype = DOUBLE;
+            class = "Area";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 8;
+            decimals = 2;
+            sortdirection = ASCENDING;
+            fontname = "Arial";
+            fontcolor = 153;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = 0;
+            oncombine = NONE;
+            unit = "m2";
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_98
+        {
+            name = "Text_10";
+            x1 = 260;
+            y1 = 0;
+            x2 = 260;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_16
+        {
+            name = "MemberSize";
+            location = (193, 0);
+            formula = "GetValue(\"MAINPART.PROFILE\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 20;
+            decimals = 2;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_15
+        {
+            name = "Description";
+            location = (71, 0);
+            formula = "GetValue(\"MAINPART.NAME\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 21;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_17
+        {
+            name = "Elevation";
+            location = (96, 0);
+            formula = "GetValue(\"ASSEMBLY_TOP_LEVEL\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_30
+        {
+            name = "Text_21";
+            x1 = 51;
+            y1 = 0;
+            x2 = 51;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_35
+        {
+            name = "Zone";
+            location = (53, 0);
+            formula = "GetValue(\"USERDEFINED.USER_FIELD_4\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 5;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_42
+        {
+            name = "GridY";
+            location = (141, 0);
+            formula = "mid(GetValue(\"ASSEMBLY_POSITION_CODE\"),find(GetValue(\"ASSEMBLY_POSITION_CODE\"),\"/\")+1,10)";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "Length";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 25;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "Arial";
+            fontcolor = 164;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            unit = "mm";
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_46
+        {
+            name = "Remark";
+            location = (262, 0);
+            formula = "";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 8;
+            decimals = 2;
+            sortdirection = ASCENDING;
+            fontname = "Arial";
+            fontcolor = 153;
+            fontcolor_argb = "";
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = 0;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_1
+        {
+            name = "Text_4";
+            x1 = 191;
+            y1 = 0;
+            x2 = 191;
+            y2 = 0;
+            string = "\\t";
+            fontname = "Arial";
+            fontcolor = 160;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+    };
+};
